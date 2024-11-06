@@ -1,0 +1,29 @@
+{
+  "name": "aklump/htaccess-manager",
+  "type": "project",
+  "authors": [
+    {
+      "name": "Aaron Klump"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "symfony/console": "^5.4",
+    "symfony/filesystem": "^5.4",
+    "symfony/yaml": "^5.4",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "AKlump\\HtaccessManager\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AKlump\\HtaccessManager\\Tests\\Unit\\": "./tests_unit"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6"
+  }
+}
