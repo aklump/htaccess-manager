@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "header": {
+      "type": "string",
+      "description": "You may include a header that appears at the top of the compiled file. You may use \\n in your string here."
+    },
+    "files": {
+      "type": "object",
+      "description": "You must define at least one file configuration, but may have as many as are necessary. Each item generates a single .htaccess file.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A title to describe this output file to administrators."
+          },
+          "output": {
+            "type": [
+              "string",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "files"
+  ]
+}

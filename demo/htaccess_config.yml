@@ -1,0 +1,11 @@
+files:
+  webroot:
+    valid_hosts:
+      - https://www.my-host.com
+    output:
+      - web/.htaccess
+      - install/web/.htaccess.webroot
+    remove_comments: true
+    source:
+      - install/apache/.htaccess.core
+      - https://raw.githubusercontent.com/drupal/drupal/7.x/.htaccess

@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\HtaccessManager\Config\LoadConfig
+ * @uses \AKlump\HtaccessManager\Config\NormalizeConfig
  */
 class LoadConfigTest extends TestCase {
 
@@ -26,6 +27,15 @@ class LoadConfigTest extends TestCase {
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('Missing');
     (new LoadConfig())($config_path);
+  }
+
+
+
+  public function testOutputPathsAreMadeAbsoluteAndStringsAreMadeArrays() {
+    $config_path = $this->getTestFileFilepath('alpha/config.yml');
+    $config = (new LoadConfig())($config_path);
+    $expected = [$this->getTestFileFilepath('alpha/web/.htaccess.staging')];
+    $this->assertSame($expected, $config['files']['staging_webroot']['output']);
   }
 
   public function testSourcePathsAreMadeAbsolute() {

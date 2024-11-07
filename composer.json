@@ -11,8 +11,15 @@
     "symfony/console": "^5.4",
     "symfony/filesystem": "^5.4",
     "symfony/yaml": "^5.4",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "aklump/json-schema-validation": "^0.0"
   },
+  "repositories": [
+    {
+      "type": "github",
+      "url": "https://github.com/aklump/json-schema-validation"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "AKlump\\HtaccessManager\\": "src"

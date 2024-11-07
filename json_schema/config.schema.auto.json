@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "header": {
+      "type": "string",
+      "description": "You may include a header that appears at the top of the compiled file. You may use \\n in your string here."
+    },
+    "ban_ips": {
+      "type": "array",
+      "description": "At the top-level, these IPs will be inherited by all output files. If you want to specify for one file only, then move into that file config and set ban_ips.",
+      "items": {
+        "type": "string",
+        "format": "ipv4"
+      }
+    },
+    "redirects": {
+      "type": "object",
+      "description": "Use the 'redirects' key to set up .htaccess redirects. The most common use case would be to map legacy URLs to new ones.",
+      "patternProperties": {
+        "^[0-9]{3}$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "object",
+      "description": "You must define at least one file configuration, but may have as many as are necessary. Each item generates a single .htaccess file.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A title to describe this section to administrators."
+          },
+          "valid_hosts": {
+            "type": "array",
+            "description": "Required. At least one valid hostname including http or https protocol.",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "ban_ips": {
+            "type": "array",
+            "description": "This key allows us to list out IPs to ban for this file only.",
+            "items": {
+              "type": "string",
+              "format": "ipv4"
+            }
+          },
+          "output": {
+            "type": [
+              "string",
+              "array"
+            ],
+            "description": "One or more paths where the output file will be saved. Any parent directories must already exist or the write will fail.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "source": {
+            "type": "array",
+            "description": "A list of source files to merge together. They are merged in the order as listed.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "remove_comments": {
+            "type": "boolean",
+            "description": "Set true or false. True will strip comment lines except header. False will leave them alone."
+          },
+          "ban_wordpress": {
+            "type": "boolean",
+            "description": "Since our website is Drupal 7, we want to fast 404 common wordpress paths so that Drupal doesn't have to bootstrap nor handle them."
+          },
+          "force_ssl": {
+            "type": "boolean",
+            "description": "OPTIONAL OVERRIDE to the auto-detected setting based on valid_hosts. Set this to 'true' to make sure the site is served over HTTPS."
+          },
+          "www_prefix": {
+            "type": "string",
+            "description": "OPTIONAL OVERRIDE to the auto-detected setting based on valid_hosts. Set this to either 'add' or 'remove' to handle the 'www' prefix on the domain.",
+            "enum": [
+              "add",
+              "remove",
+              "default"
+            ]
+          },
+          "hotlinks": {
+            "type": "object",
+            "description": "Hot link protection prevents directly linking to files, pictures, etc on your website.",
+            "properties": {
+              "deny": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "redirects": {
+            "type": "object",
+            "properties": {
+              "inherit": {
+                "type": "boolean",
+                "description": "Set this to false to block inheritance of the shared redirects."
+              },
+              "patternProperties": {
+                "^[0-9]{3}$": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "ban_ips_inherit": {
+            "type": "boolean",
+            "description": "Use this to not include the top-level ban_ips in this file."
+          },
+          "http_auth": {
+            "type": "object",
+            "description": "This will add the http_auth code. You must still generate the password file manually.",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "This will appear in the Apache password box."
+              },
+              "user_file": {
+                "type": "string",
+                "description": "The absolute path on the server to the password file that you generated using the htpasswd command."
+              },
+              "whitelist": {
+                "type": "array",
+                "description": "You may whitelist any IPs that should not have to log in.",
+                "items": {
+                  "type": "string",
+                  "format": "ipv4"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "files"
+  ]
+}

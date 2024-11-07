@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
  * @covers \AKlump\HtaccessManager\Plugin\SourcePlugin
  * @uses   \AKlump\HtaccessManager\Config\LoadConfig
  * @uses   \AKlump\HtaccessManager\Exception\PluginFailedException
+ * @uses \AKlump\HtaccessManager\Config\NormalizeConfig
  *
  */
 class SourcePluginTest extends TestCase {
