@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\HtaccessManager\Tests\Unit\TestTraits;
+namespace AKlump\HtaccessManager\Tests\Unit\TestingTraits;
 
 trait TestWithFilesTrait {
 

@@ -2,7 +2,9 @@
 
 namespace AKlump\HtaccessManager\Config;
 
+use AKlump\HtaccessManager\Plugin\MergePluginSchemas;
 use AKlump\JsonSchema\JsonDecodeLossless;
+use AKlump\JsonSchema\LoadSchema;
 use AKlump\JsonSchema\ValidateWithSchema;
 use InvalidArgumentException;
 use RuntimeException;
@@ -20,6 +22,13 @@ use Symfony\Component\Yaml\Yaml;
  * @throws InvalidArgumentException if $config_path is not absolute or the configuration file does not exist.
  */
 class LoadConfig {
+
+
+  private array $plugins;
+
+  public function __construct(array $plugins) {
+    $this->plugins = $plugins;
+  }
 
   public function __invoke(string $config_path): array {
     if (!Path::isAbsolute($config_path)) {
@@ -56,9 +65,9 @@ class LoadConfig {
   }
 
   private function validateSchema(array $config) {
-    $path_to_schema = __DIR__ . '/../../json_schema/user_config.schema.json';
-    $schema_json = file_get_contents($path_to_schema);
-    $validate = new ValidateWithSchema($schema_json, dirname($path_to_schema));
+    $path_to_schema = __DIR__ . '/../../json_schema/config.schema.json';
+    $loaded_schema = (new LoadSchema())($path_to_schema, (new MergePluginSchemas($this->plugins)));
+    $validate = new ValidateWithSchema($loaded_schema, dirname($path_to_schema));
 
     $config_to_validate = (new JsonDecodeLossless())(json_encode($config));
     $errors = $validate($config_to_validate);

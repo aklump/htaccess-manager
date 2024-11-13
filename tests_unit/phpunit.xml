@@ -13,12 +13,14 @@
     <testsuites>
         <testsuite name="default">
             <directory suffix="Test.php">.</directory>
+            <directory suffix="Test.php">../plugins/*/tests/</directory>
         </testsuite>
     </testsuites>
 
     <coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">../src</directory>
+            <directory suffix="Plugin.php">../plugins/*/</directory>
         </include>
     </coverage>
 </phpunit>

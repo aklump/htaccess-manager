@@ -12,9 +12,15 @@
     "symfony/filesystem": "^5.4",
     "symfony/yaml": "^5.4",
     "ext-curl": "*",
-    "aklump/json-schema-validation": "^0.0"
+    "aklump/json-schema-validation": "^0.0",
+    "aklump/json-schema-loading": "^0.0",
+    "ext-json": "*"
   },
   "repositories": [
+    {
+      "type": "github",
+      "url": "https://github.com/aklump/json-schema-loading"
+    },
     {
       "type": "github",
       "url": "https://github.com/aklump/json-schema-validation"
@@ -27,10 +33,21 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "AKlump\\HtaccessManager\\Tests\\Unit\\": "./tests_unit"
+      "AKlump\\HtaccessManager\\Tests\\Unit\\": [
+        "./tests_unit"
+      ],
+      "AKlump\\HtaccessManager\\Tests\\Unit\\Plugin\\": [
+        "./tests_unit/Plugin",
+        "./plugins/ban_ips/tests",
+        "./plugins/ban_wordpress/tests",
+        "./plugins/http_auth/tests",
+        "./plugins/source/tests",
+        "./plugins/www_prefix/tests"
+      ]
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.6"
+    "phpunit/phpunit": "^9.6",
+    "composer/composer": "*"
   }
 }

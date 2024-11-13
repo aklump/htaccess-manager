@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "files": {
+      "type": "object",
+      "properties": {
+        "hotlinks": {
+          "type": "object",
+          "properties": {
+            "deny": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "File extensions without dots, which are to be 403 denied for hotlinks.",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

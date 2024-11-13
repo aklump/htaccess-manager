@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lorem",
+  "title": "Lorem Schema",
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "bravo": {
+      "type": "string"
+    },
+    "charlie": {
+      "type": "array",
+      "description": "Dolar sit amet."
+    },
+    "fruits": {
+      "type": "object",
+      "patternProperties": {
+        ".+": {
+          "type": "object",
+          "required": [
+            "banana"
+          ],
+          "properties": {
+            "banana": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

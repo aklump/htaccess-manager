@@ -126,6 +126,8 @@ files:
   # for the staging website.
   staging_webroot:
     title: Staging .htaccess for Drupal 7 webroot
+    valid_hosts:
+      - https://test.my-project.edu
     output: web/.htaccess.staging
     source:
       - apache/webroot/.htaccess.custom

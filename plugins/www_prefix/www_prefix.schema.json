@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "files": {
+      "type": "object",
+      "properties": {
+        "force_ssl": {
+          "type": "boolean"
+        },
+        "www_prefix": {
+          "type": "string",
+          "enum": [
+            "default",
+            "add",
+            "remove"
+          ]
+        }
+      }
+    }
+  }
+}

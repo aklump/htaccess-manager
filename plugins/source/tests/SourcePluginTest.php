@@ -2,27 +2,28 @@
 
 namespace AKlump\HtaccessManager\Tests\Unit\Plugin;
 
+require_once __DIR__ . '/../SourcePlugin.php';
+
 use AKlump\HtaccessManager\Config\LoadConfig;
 use AKlump\HtaccessManager\Exception\PluginFailedException;
 use AKlump\HtaccessManager\Plugin\SourcePlugin;
-use AKlump\HtaccessManager\Tests\Unit\TestTraits\TestWithFilesTrait;
+use AKlump\HtaccessManager\Tests\Unit\TestingTraits\TestWithFilesTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\HtaccessManager\Plugin\SourcePlugin
  * @uses   \AKlump\HtaccessManager\Config\LoadConfig
  * @uses   \AKlump\HtaccessManager\Exception\PluginFailedException
- * @uses \AKlump\HtaccessManager\Config\NormalizeConfig
+ * @uses   \AKlump\HtaccessManager\Config\NormalizeConfig
+ * @uses   \AKlump\HtaccessManager\Plugin\GetPlugins
+ * @uses   \AKlump\HtaccessManager\Plugin\MergePluginSchemas
+ * @uses   \AKlump\HtaccessManager\JsonSchemaMerge\MergeSchemas
+ * @uses   \AKlump\HtaccessManager\Helper\GetShortPath
  *
  */
 class SourcePluginTest extends TestCase {
 
   use TestWithFilesTrait;
-
-  public function testNotStreamResourceThrows() {
-    $this->expectException(\InvalidArgumentException::class);
-    (new SourcePlugin())('/foo/bar/baz', []);
-  }
 
   public function testStrangeValueThrows() {
     $this->deleteTestFile('.cache');
@@ -49,7 +50,7 @@ class SourcePluginTest extends TestCase {
     $this->deleteTestFile('.cache');
     $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess');
     $config_path = $this->getTestFileFilepath('alpha/config.yml');
-    $config = (new LoadConfig())($config_path);
+    $config = (new LoadConfig([]))($config_path);
     $config = $config['files']['prod_webroot'];
 
     $this->assertFileDoesNotExist($output_path);
@@ -68,5 +69,9 @@ class SourcePluginTest extends TestCase {
 
     $this->assertStringContainsString('# Downloaded from https://raw.githubusercontent.com/drupal/drupal/7.x/.htaccess', $content, 'Assert correct header');
     $this->assertStringContainsString('# Apache/PHP/Drupal settings:', $content);
+  }
+
+  public function testGetPriority() {
+    $this->assertSame(0, SourcePlugin::getPriority());
   }
 }

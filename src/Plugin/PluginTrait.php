@@ -2,22 +2,14 @@
 
 namespace AKlump\HtaccessManager\Plugin;
 
-use InvalidArgumentException;
+use RuntimeException;
 
 trait PluginTrait {
 
   /**
-   * Throw if argument is not a stream resource.
-   *
-   * @param $resource
-   *
-   * @return void
+   * @var resource
    */
-  private function tryValidateStreamResource($resource) {
-    if (!is_resource($resource) || get_resource_type($resource) !== 'stream') {
-      throw new InvalidArgumentException('Expected a file resource.');
-    }
-  }
+  protected $resource;
 
   /**
    * Writes a formatted header to a stream resource.
@@ -27,17 +19,45 @@ trait PluginTrait {
    *
    * @return void
    */
-  private function writeFileHeader($resource, array $lines): void {
-    fwrite($resource, PHP_EOL);
-    fwrite($resource, '#' . PHP_EOL);
-    fwrite($resource, '#' . PHP_EOL);
+  private function fWriteHeader(array $lines): void {
+    $this->tryValidateResource();
+    //    fwrite($this->resource, PHP_EOL);
+    fwrite($this->resource, '#' . PHP_EOL);
+    fwrite($this->resource, '#' . PHP_EOL);
     foreach ($lines as $line) {
-      fwrite($resource, "# $line" . PHP_EOL);
+      fwrite($this->resource, "# $line" . PHP_EOL);
     }
-    fwrite($resource, '#' . PHP_EOL);
+    fwrite($this->resource, '#' . PHP_EOL);
+  }
+
+  private function fWriteLine(string $line = '', ...$values): void {
+    $this->tryValidateResource();
+    if ($values) {
+      fwrite($this->resource, sprintf($line, ...$values) . PHP_EOL);
+    }
+    else {
+      fwrite($this->resource, $line . PHP_EOL);
+    }
+  }
+
+  private function tryValidateResource(): void {
+    if (!isset($this->resource)) {
+      throw new RuntimeException(sprintf('$this->resource is not set in %s', __CLASS__));
+    }
   }
 
   private function listAddItem(string $string) {
     //    echo $string . PHP_EOL;
+  }
+
+  private function fWritePluginStart() {
+    $this->fWriteHeader([
+      sprintf("%s Plugin", $this->getName()),
+    ]);
+  }
+
+  private function fWritePluginStop() {
+    $this->fWriteLine("# End %s plugin", $this->getName());
+    $this->fWriteLine();
   }
 }
