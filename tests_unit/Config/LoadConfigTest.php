@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  * @uses   \AKlump\HtaccessManager\Config\NormalizeConfig
  * @uses   \AKlump\HtaccessManager\Plugin\MergePluginSchemas
  * @uses   \AKlump\PluginFramework\GetPlugins
- * @uses   \AKlump\HtaccessManager\JsonSchemaMerge\MergeSchemas
+ * @uses   \AKlump\JsonSchema\Merge\MergeSchemas
  */
 class LoadConfigTest extends TestCase {
 

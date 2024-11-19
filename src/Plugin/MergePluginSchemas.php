@@ -2,7 +2,7 @@
 
 namespace AKlump\HtaccessManager\Plugin;
 
-use AKlump\HtaccessManager\JsonSchemaMerge\MergeSchemas;
+use AKlump\JsonSchema\Merge\MergeSchemas;
 
 class MergePluginSchemas {
 

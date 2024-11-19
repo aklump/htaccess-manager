@@ -1,13 +1,13 @@
 <?php
 
-namespace AKlump\HtaccessManager\Tests\Unit\Plugin\JsonSchemaMerge;
+namespace AKlump\JsonSchema\Merge\Tests;
 
-use AKlump\HtaccessManager\JsonSchemaMerge\MergeSchemas;
 use AKlump\HtaccessManager\Tests\Unit\TestingTraits\TestWithFilesTrait;
+use AKlump\JsonSchema\Merge\MergeSchemas;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\HtaccessManager\JsonSchemaMerge\MergeSchemas
+ * @covers \AKlump\aklump_merge_schemas\MergeSchemas
  */
 class MergeSchemasTest extends TestCase {
 

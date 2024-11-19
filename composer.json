@@ -29,7 +29,8 @@
   "autoload": {
     "psr-4": {
       "AKlump\\HtaccessManager\\": "src",
-      "AKlump\\PluginFramework\\": "aklump_plugin_framework"
+      "AKlump\\PluginFramework\\": "aklump_plugin_framework",
+      "AKlump\\JsonSchema\\Merge\\": "aklump_json_schema_merge"
     }
   },
   "autoload-dev": {

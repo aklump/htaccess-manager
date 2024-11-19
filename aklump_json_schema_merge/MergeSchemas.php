@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\HtaccessManager\JsonSchemaMerge;
+namespace AKlump\JsonSchema\Merge;
 
 use InvalidArgumentException;
 
