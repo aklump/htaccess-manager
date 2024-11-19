@@ -1,14 +1,15 @@
 <?php
 
-namespace AKlump\HtaccessManager\Plugin;
+namespace AKlump\PluginFramework;
 
 use Composer\Autoload\ClassLoader;
+use ReflectionClass;
 
 /**
  * @code
  * $class_loader = require __DIR__ . '/vendor/autoload.php';
  *
- * $plugins = (new \AKlump\HtaccessManager\Plugin\GetPlugins(
+ * $plugins = (new \AKlump\PluginFramework\GetPlugins(
  * [__DIR__ . '/plugins/'],
  * [\AKlump\HtaccessManager\Plugin\PluginInterface::class],
  * '*.schema.json',
@@ -45,8 +46,7 @@ class GetPlugins {
     $this->classLoader = $class_loader;
   }
 
-  public
-  function __invoke(): array {
+  public function __invoke(): array {
     $plugins = [];
     foreach ($this->directories as $directory) {
       $plugins = array_merge($plugins, $this->scanForPlugins($directory));
@@ -54,8 +54,7 @@ class GetPlugins {
 
     // Add autoloading for the plugin classes.
     foreach ($plugins as $plugin) {
-      $this->classLoader->addPsr4('AKlump\HtaccessManager\Plugin\\', dirname($plugin['class_path']));
-      //      $this->classLoader->addPsr4('AKlump\HtaccessManager\Tests\Unit\Plugin\\', dirname($plugin['class_path']));
+      $this->classLoader->addPsr4($plugin['namespace'] . '\\', dirname($plugin['class_path']));
     }
 
     uasort($plugins, $this->sortFunction);
@@ -63,10 +62,7 @@ class GetPlugins {
     return $plugins;
   }
 
-  private
-  function isClassAPlugin(
-    string $class
-  ): bool {
+  private function isClassAPlugin(string $class): bool {
     foreach ($this->interfaces as $interface) {
       if (isset(class_implements($class)[$interface])) {
         return TRUE;
@@ -76,10 +72,7 @@ class GetPlugins {
     return FALSE;
   }
 
-  private
-  function scanForPlugins(
-    $start_dir, &$context = []
-  ) {
+  private function scanForPlugins($start_dir, &$context = []) {
     $php_files = glob($start_dir . '/*.php');
     if (empty($php_files)) {
       $directories = glob($start_dir . '/*', GLOB_ONLYDIR);
@@ -88,31 +81,42 @@ class GetPlugins {
       }
     }
     else {
-      $context['declared_classes'] = get_declared_classes();
-      foreach ($php_files as $filename) {
-        require_once $filename;
-        $declared_classes = get_declared_classes();
-        $new_classes = array_diff($declared_classes, $context['declared_classes']);
-        $context['declared_classes'] = $declared_classes;
-        foreach ($new_classes as $new_class) {
-          if (!$this->isClassAPlugin($new_class)) {
-            continue;
-          }
-          $schema_files = glob(dirname($filename) . '/' . $this->configSchemaPattern);
-          $config_schema = array_values($schema_files)[0] ?? NULL;
-          if ($config_schema) {
-            $config_schema = realpath($config_schema);
-          }
-          $context['plugins'][] = [
-            'class_path' => realpath($filename),
-            'classname' => $new_class,
-            'config_schema' => $config_schema,
-          ];
-        }
-      }
+      $context = $this->loadPluginClasses($php_files, $context);
     }
 
     return $context['plugins'] ?? [];
+  }
+
+  private function getConfigSchema(string $filename): ?string {
+    $schema_files = glob(dirname($filename) . '/' . $this->configSchemaPattern);
+
+    return array_values($schema_files)[0] ?? NULL;
+  }
+
+  private function loadPluginClasses(array $php_files, $context) {
+    $context['declared_classes'] = get_declared_classes();
+    foreach ($php_files as $filename) {
+      require_once $filename;
+      $new_classes = array_diff(get_declared_classes(), $context['declared_classes']);
+      $context['declared_classes'] = get_declared_classes();
+      foreach ($new_classes as $new_class) {
+        if (!$this->isClassAPlugin($new_class)) {
+          continue;
+        }
+        $config_schema = $this->getConfigSchema($filename);
+        if ($config_schema) {
+          $config_schema = realpath($config_schema);
+        }
+        $context['plugins'][] = [
+          'class_path' => realpath($filename),
+          'namespace' => (new ReflectionClass($new_class))->getNamespaceName(),
+          'classname' => $new_class,
+          'config_schema' => $config_schema,
+        ];
+      }
+    }
+
+    return $context;
   }
 
 }

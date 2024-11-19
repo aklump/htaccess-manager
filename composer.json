@@ -28,7 +28,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "AKlump\\HtaccessManager\\": "src"
+      "AKlump\\HtaccessManager\\": "src",
+      "AKlump\\PluginFramework\\": "aklump_plugin_framework"
     }
   },
   "autoload-dev": {

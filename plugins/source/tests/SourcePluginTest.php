@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
  * @uses   \AKlump\HtaccessManager\Config\LoadConfig
  * @uses   \AKlump\HtaccessManager\Exception\PluginFailedException
  * @uses   \AKlump\HtaccessManager\Config\NormalizeConfig
- * @uses   \AKlump\HtaccessManager\Plugin\GetPlugins
+ * @uses   \AKlump\PluginFramework\GetPlugins
  * @uses   \AKlump\HtaccessManager\Plugin\MergePluginSchemas
  * @uses   \AKlump\HtaccessManager\JsonSchemaMerge\MergeSchemas
  * @uses   \AKlump\HtaccessManager\Helper\GetShortPath

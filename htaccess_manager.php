@@ -1,15 +1,11 @@
 #!/usr/bin/env php
 <?php
-// htaccess_manager.php
-
 $class_loader = require __DIR__ . '/vendor/autoload.php';
 
-use Symfony\Component\Console\Application;
 use AKlump\HtaccessManager\BuildCommand;
+use Symfony\Component\Console\Application;
 
-global $script;
-
-$plugins = (new \AKlump\HtaccessManager\Plugin\GetPlugins(
+$plugins = (new \AKlump\PluginFramework\GetPlugins(
   [
     __DIR__ . '/src/Plugin',
     __DIR__ . '/plugins/',
@@ -24,7 +20,6 @@ $plugins = (new \AKlump\HtaccessManager\Plugin\GetPlugins(
   '*.schema.json',
   $class_loader
 ))();
-
 
 $application = new Application();
 $application->setName('Htaccess Manager');
