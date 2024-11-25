@@ -8,13 +8,14 @@
   ],
   "require": {
     "php": ">=7.4",
-    "symfony/console": "^5.4",
-    "symfony/filesystem": "^5.4",
-    "symfony/yaml": "^5.4",
+    "symfony/console": "^4.4 || ^5.4 || ^6",
+    "symfony/filesystem": "^4.4 || ^5.4 || ^6",
+    "symfony/yaml": "^4.4 || ^5.4 || ^6",
     "ext-curl": "*",
     "aklump/json-schema-validation": "^0.0",
     "aklump/json-schema-loading": "^0.0",
-    "ext-json": "*"
+    "ext-json": "*",
+    "aklump/json-schema-merge": "@dev"
   },
   "repositories": [
     {
@@ -24,13 +25,16 @@
     {
       "type": "github",
       "url": "https://github.com/aklump/json-schema-validation"
+    },
+    {
+      "type": "path",
+      "url": "/Users/aklump/Code/Packages/php/json_schema_merge"
     }
   ],
   "autoload": {
     "psr-4": {
       "AKlump\\HtaccessManager\\": "src",
-      "AKlump\\PluginFramework\\": "aklump_plugin_framework",
-      "AKlump\\JsonSchema\\Merge\\": "aklump_json_schema_merge"
+      "AKlump\\PluginFramework\\": "aklump_plugin_framework"
     }
   },
   "autoload-dev": {
