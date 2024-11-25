@@ -27,8 +27,8 @@
       "url": "https://github.com/aklump/json-schema-validation"
     },
     {
-      "type": "path",
-      "url": "/Users/aklump/Code/Packages/php/json_schema_merge"
+      "type": "github",
+      "url": "https://github.com/aklump/json-schema-merge"
     }
   ],
   "autoload": {

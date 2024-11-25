@@ -27,10 +27,7 @@ ban_ips:
 redirects:
   301:
     - /some/old/path /some/new/path
-
-    # Notice the use of the escaped $, e.g. '\$' in this example for the replace
-    # side of this line.
-    - /foo/(.+) /bar/\$1
+    - /foo/(.+) /bar/$1
   403:
     - /some/forbidden/path
 
