@@ -1,4 +1,4 @@
-# Htaccess
+# Htaccess Manager
 
 ![htaccess](images/htaccess.jpg)
 
