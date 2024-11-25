@@ -55,5 +55,8 @@
   "require-dev": {
     "phpunit/phpunit": "^9.6",
     "composer/composer": "*"
-  }
+  },
+  "bin": [
+    "bin/htaccess"
+  ]
 }
