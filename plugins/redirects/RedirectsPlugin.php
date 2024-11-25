@@ -2,6 +2,8 @@
 
 namespace AKlump\HtaccessManager\redirects;
 
+use AKlump\HtaccessManager\Config\Defaults;
+use AKlump\HtaccessManager\Exception\ConfigurationException;
 use AKlump\HtaccessManager\Plugin\PluginInterface;
 use AKlump\HtaccessManager\Plugin\PluginTrait;
 
@@ -27,7 +29,7 @@ class RedirectsPlugin implements PluginInterface {
    * @inheritDoc
    */
   public function __invoke($output_file_resource, array $output_file_config, array &$context = []): void {
-    $redirects_by_code = $this->getRedirects($output_file_config, $context['config'] ?? []);
+    $redirects_by_code = $this->getRedirects($output_file_config, $context);
     if (empty($redirects_by_code)) {
       return;
     }
@@ -47,13 +49,13 @@ class RedirectsPlugin implements PluginInterface {
     $this->fWritePluginStop();
   }
 
-  private function getRedirects(array $output_file_config, array $global_config): array {
+  private function getRedirects(array $output_file_config, array $context): array {
+    $global_config = $context['config'] ?? [];
     $redirect_groups = $this->onlyRedirects($output_file_config["redirects"] ?? []);
-
     $global = $this->onlyRedirects($global_config['redirects'] ?? []);
     if ($global) {
-      $inherit_glboal = isset($output_file_config['redirects']['inherit']) && TRUE === $output_file_config['redirects']['inherit'];
-      if ($inherit_glboal) {
+      $inherit_global = TRUE === ($output_file_config['redirects']['inherit'] ?? TRUE);
+      if ($inherit_global) {
         foreach ($global as $code => $global_redirect) {
           $redirect_groups[$code] = $redirect_groups[$code] ?? [];
           $redirect_groups[$code] = array_merge($redirect_groups[$code], $global_redirect);
@@ -64,8 +66,13 @@ class RedirectsPlugin implements PluginInterface {
     foreach ($redirect_groups as $code => &$redirects) {
       $redirects = array_unique($redirects);
       $quote_url = new QuoteUrl();
-      $redirects = array_map(function ($redirect) use ($code, $quote_url) {
+      $redirects = array_map(function ($redirect) use ($code, $quote_url, $context) {
         $result = explode(' ', $redirect, 2);
+
+        if (isset($result[1])) {
+          $this->lintRedirectTarget($result[1], $code, $context);
+        }
+
         $result = array_map($quote_url, $result);
         array_unshift($result, $code);
 
@@ -85,6 +92,21 @@ class RedirectsPlugin implements PluginInterface {
 
   private function wrapFromUrlWithMatchingPattern(string $from): string {
     return "^$from/?\$";
+  }
+
+  /**
+   * Catch syntax errors in the redirect target.
+   *
+   * @param string $redirect_target
+   *
+   * @return void
+   *
+   * @throws \AKlump\HtaccessManager\Exception\ConfigurationException If the syntax is wrong.
+   */
+  private function lintRedirectTarget(string $redirect_target, int $redirect_code, $context): void {
+    if (preg_match('#\\\(\$\d)#', $redirect_target, $matches)) {
+      throw new ConfigurationException(sprintf('In "%s" there is a %d redirect target "%s" that appears to be escaping a regexp capture group; you should remove the backslash, e.g, "%s".', $context['output_file_id'] ?? Defaults::OUTPUT_FILE_ID, $redirect_code, $redirect_target, str_replace($matches[0], $matches[1], $redirect_target)));
+    }
   }
 
 }

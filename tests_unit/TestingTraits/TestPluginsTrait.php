@@ -12,7 +12,7 @@ trait TestPluginsTrait {
     $id = strtolower((new ReflectionClass($this))->getShortName());
     $id = preg_replace('#plugintest$#i', '', $id);
 
-    return $this->getTestFileFilepath(sprintf('.cache/%s.htaccess', $id));
+    return $this->getTestFileFilepath(sprintf('.cache/%s.htaccess', $id), TRUE);
   }
 
   protected function getResourceContext(): array {

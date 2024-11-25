@@ -104,16 +104,12 @@ trait TestWithFilesTrait {
         mkdir($path, 0755, TRUE);
       }
     }
-    else {
-      // For all files, always create the parent structure to make it easy on
-      // the implementing test to work with the filepath.  No harm as the
-      // teardown method should be calling deleteAll(), which will remove the
-      // created directories.
+    elseif($create) {
       $parent = dirname($path);
       if (!file_exists($parent)) {
         mkdir($parent, 0755, TRUE);
       }
-      if ($create && !file_exists($path)) {
+      if (!file_exists($path)) {
         touch($path);
       }
     }

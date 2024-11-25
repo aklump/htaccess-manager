@@ -14,6 +14,13 @@ class WWWPrefixPlugin implements PluginInterface {
 
   private string $protossl;
 
+  public static function willHandleForceSSL(array $output_file_config): bool {
+    return in_array(static::getWWWPrefixValue($output_file_config), [
+      'add',
+      'remove',
+    ]);
+  }
+
   /**
    * @inheritDoc
    */
@@ -29,18 +36,20 @@ class WWWPrefixPlugin implements PluginInterface {
    * @inheritDoc
    */
   public function __invoke($output_file_resource, array $output_file_config, array &$context = []): void {
-    if (empty($output_file_config['www_prefix']) || !in_array($output_file_config['www_prefix'], [
-        'add',
-        'remove',
-      ])) {
+    $www_prefix = $this->getWWWPrefixValue($output_file_config);
+    if (!in_array($www_prefix, ['add', 'remove'])) {
       return;
     }
     $this->resource = $output_file_resource;
 
-    $force_ssl = $context['config']['force_ssl'] ?? $output_file_config['force_ssl'] ?? FALSE;
+    $force_ssl = FALSE;
     $this->protossl = '%{ENV:protossl}';
-    if ($force_ssl) {
-      $this->protossl = 's';
+
+    if (self::willHandleForceSSL($output_file_config)) {
+      $force_ssl = $this->getForceSSLConfigValue($output_file_config);
+      if ($force_ssl) {
+        $this->protossl = 's';
+      }
     }
 
     $this->listAddItem('Using plugin: ' . $this->getName());
@@ -48,9 +57,14 @@ class WWWPrefixPlugin implements PluginInterface {
     // Open the declaration...
     $this->fWriteLine('<IfModule mod_rewrite.c>');
     $this->fWriteLine('  RewriteEngine on');
-    $this->fWriteLine('  RewriteCond %{HTTP_HOST} .');
 
-    switch ($output_file_config['www_prefix']) {
+    if (!$force_ssl) {
+      $this->fWriteLine('  # Used to set the appropriate http/https protocol in the rewrite.');
+      $this->fWriteLine("  RewriteCond %{HTTPS} on");
+      $this->fWriteLine("  RewriteRule ^ - [E=protossl:s]");
+    }
+
+    switch ($www_prefix) {
       case 'add':
         $this->addPrefix();
         break;

@@ -10,12 +10,13 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\HtaccessManager\Plugin\ForceSSLPlugin
+ * @uses \AKlump\HtaccessManager\Plugin\WWWPrefixPlugin
  */
 class ForceSSLPluginTest extends TestCase {
 
   use TestPluginsTrait;
 
-  public function testInvokeWithForceSSLTrueWriteExpected() {
+  public function testInvokeWithForceSSLTrueWritesAsExpected() {
     $rc = $this->getResourceContext();
     (new ForceSSLPlugin())($rc['resource'], [
       'force_ssl' => TRUE,
@@ -32,6 +33,18 @@ class ForceSSLPluginTest extends TestCase {
     </IfModule>
     EOD;
     $this->assertStringContainsString($expected, file_get_contents($rc['path']));
+  }
+
+  public function testPluginDoesNothingWhenValidHostsSSLButForceSSLIsFalse() {
+    $rc = $this->getResourceContext();
+    (new ForceSSLPlugin())($rc['resource'], [
+      'valid_hosts' => [
+        'https://www.website.com/',
+      ],
+      'force_ssl' => FALSE,
+    ]);
+    fclose($rc['resource']);
+    $this->assertSame('', file_get_contents($rc['path']));
   }
 
   public function testInvokeWithForceSSLFalseWriteExpected() {

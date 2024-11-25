@@ -19,6 +19,7 @@
 
     <coverage processUncoveredFiles="true">
         <include>
+            <directory suffix=".php">../aklump_json_schema_merge</directory>
             <directory suffix=".php">../src</directory>
             <directory suffix="Plugin.php">../plugins/*/</directory>
         </include>

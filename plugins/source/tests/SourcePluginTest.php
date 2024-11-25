@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @uses   \AKlump\HtaccessManager\Config\NormalizeConfig
  * @uses   \AKlump\PluginFramework\GetPlugins
  * @uses   \AKlump\HtaccessManager\Plugin\MergePluginSchemas
- * @uses   \AKlump\JsonSchema\Merge\MergeSchemas
+ * @uses   \AKlump\JsonSchema\MergeSchemas
  * @uses   \AKlump\HtaccessManager\Helper\GetShortPath
  *
  */
@@ -25,8 +25,28 @@ class SourcePluginTest extends TestCase {
 
   use TestWithFilesTrait;
 
+  public function testSourcePathIsMadeRelativeToConfigPathInComment() {
+    $this->deleteTestFile('.cache');
+    $output_path = $this->getTestFileFilepath('.cache/', TRUE);
+    $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess');
+    $config_path = $this->getTestFileFilepath('alpha/config.yml');
+    $config = (new LoadConfig([]))($config_path);
+    $config = $config['files']['prod_webroot'];
+    $context = [
+      'config_path' => $config_path,
+    ];
+
+    $output_resource = fopen($output_path, 'a');
+    (new SourcePlugin())($output_resource, $config, $context);
+    fclose($output_resource);
+    $content = file_get_contents($output_path);
+
+    $this->assertStringContainsString('# Copied from apache/.htaccess.banned_ips', $content, 'Assert correct header');
+  }
+
   public function testStrangeValueThrows() {
     $this->deleteTestFile('.cache');
+    $output_path = $this->getTestFileFilepath('.cache/', TRUE);
     $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess');
     $config_path = $this->getTestFileFilepath('.cache/config.yml');
     $this->expectException(PluginFailedException::class);
@@ -38,7 +58,7 @@ class SourcePluginTest extends TestCase {
 
   public function testEmptySourceDoesWriteToFile() {
     $this->deleteTestFile('.cache');
-    $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess');
+    $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess', TRUE);
     $output_resource = fopen($output_path, 'a');
     $position_before = ftell($output_resource);
     (new SourcePlugin())($output_resource, []);
@@ -48,6 +68,7 @@ class SourcePluginTest extends TestCase {
 
   public function testInvoke() {
     $this->deleteTestFile('.cache');
+    $output_path = $this->getTestFileFilepath('.cache/', TRUE);
     $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess');
     $config_path = $this->getTestFileFilepath('alpha/config.yml');
     $config = (new LoadConfig([]))($config_path);

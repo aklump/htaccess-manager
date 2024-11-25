@@ -28,7 +28,7 @@ class WWWPrefixPluginTest extends TestCase {
     ], $context);
     fclose($rc['resource']);
 
-    $this->assertStringContainsString("\n  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]\n", file_get_contents($rc['path']));
+    $this->assertStringContainsString("\n  RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]\n", file_get_contents($rc['path']));
   }
 
   public function testInvokeWithConfigValueRemoveAndForceSSLWritesAsExpected() {
@@ -42,7 +42,6 @@ class WWWPrefixPluginTest extends TestCase {
     $expected = <<<EOD
     <IfModule mod_rewrite.c>
       RewriteEngine on
-      RewriteCond %{HTTP_HOST} .
       # Remove the leading "www." prefix
       RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
       RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
@@ -64,7 +63,9 @@ class WWWPrefixPluginTest extends TestCase {
     $expected = <<<EOD
     <IfModule mod_rewrite.c>
       RewriteEngine on
-      RewriteCond %{HTTP_HOST} .
+      # Used to set the appropriate http/https protocol in the rewrite.
+      RewriteCond %{HTTPS} on
+      RewriteRule ^ - [E=protossl:s]
       # Remove the leading "www." prefix
       RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
       RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
@@ -84,7 +85,6 @@ class WWWPrefixPluginTest extends TestCase {
     $expected = <<<EOD
     <IfModule mod_rewrite.c>
       RewriteEngine on
-      RewriteCond %{HTTP_HOST} .
       # Ensure the domain has the leading "www." prefix
       RewriteCond %{HTTP_HOST} !^www\. [NC]
       RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
@@ -106,13 +106,29 @@ class WWWPrefixPluginTest extends TestCase {
     $expected = <<<EOD
     <IfModule mod_rewrite.c>
       RewriteEngine on
-      RewriteCond %{HTTP_HOST} .
+      # Used to set the appropriate http/https protocol in the rewrite.
+      RewriteCond %{HTTPS} on
+      RewriteRule ^ - [E=protossl:s]
       # Ensure the domain has the leading "www." prefix
       RewriteCond %{HTTP_HOST} !^www\. [NC]
       RewriteRule ^ http%{ENV:protossl}://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     </IfModule>
     EOD;
     $this->assertStringContainsString($expected, file_get_contents($rc['path']));
+  }
+
+  public function testAutoDetectAddForceSSLFalseUsesEnvironmentProtocolForRedirect() {
+    $rc = $this->getResourceContext();
+    (new WWWPrefixPlugin())($rc['resource'], [
+      'valid_hosts' => [
+        'https://www.website.com/',
+      ],
+      'force_ssl' => FALSE,
+    ]);
+    fclose($rc['resource']);
+    $content = file_get_contents($rc['path']);
+    $this->assertStringContainsString("\n  RewriteCond %{HTTP_HOST} !^www\. [NC]\n", $content, "Assert www. prefix is only added when missing.");
+    $this->assertStringContainsString("\n  RewriteRule ^ http%{ENV:protossl}://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]\n", $content, "Protocol is using server to determine http/https protocol.");
   }
 
   public function testInvokeWithConfigValueDefaultDoesNotChangeFile() {

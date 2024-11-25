@@ -42,6 +42,7 @@ class BuildCommand extends Command {
     $config_path = Path::makeAbsolute($config_path, getcwd());
     $config = (new LoadConfig($this->plugins))($config_path);
     $context = [
+      'config_path' => $config_path,
       'config' => $config,
       'file_header' => [
         '@see' => $this->pathToController,
@@ -49,26 +50,27 @@ class BuildCommand extends Command {
     ];
     foreach ($config['files'] as $file_id => $output_file_config) {
 
-      $output_file_path = array_shift($output_file_config['output']);
-      $prepare_path($output_file_path);
+      $output_filepath = array_shift($output_file_config['output']);
+      $prepare_path($output_filepath);
 
-      $output_file_resource = fopen($output_file_path, 'w');
+      $output_file_resource = fopen($output_filepath, 'w');
+      $context['output_filepath'] = $output_filepath;
       $context['output_file_id'] = $file_id;
       $this->applyPlugins($output_file_resource, $output_file_config, $context);
-      $output->writeln(Icons::FILE . $short_path($output_file_path));
+      $output->writeln(Icons::FILE . $short_path($output_filepath));
       fclose($output_file_resource);
 
       if ($output_file_config['remove_comments'] ?? FALSE) {
-        $content = file_get_contents($output_file_path);
+        $content = file_get_contents($output_filepath);
         list($header, $body) = (new SplitHeader())($content);
-        file_put_contents($output_file_path, $header . (new RemoveComments())($body));
+        file_put_contents($output_filepath, $header . (new RemoveComments())($body));
       }
 
       // Sometimes there are more than one output files, if so copy the
       // newly-created output file to the other ones.
       foreach ($output_file_config['output'] as $target_file_path) {
         $prepare_path($target_file_path);
-        copy($output_file_path, $target_file_path);
+        copy($output_filepath, $target_file_path);
         $output->writeln(Icons::FILE . $short_path($target_file_path));
       }
     }

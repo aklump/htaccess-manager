@@ -25,15 +25,14 @@ class ForceSSLPlugin implements PluginInterface {
    * @inheritDoc
    */
   public function __invoke($output_file_resource, array $output_file_config, array &$context = []): void {
-    if (empty($output_file_config['force_ssl'])) {
+    $force_ssl = $this->getForceSSLConfigValue($output_file_config);
+    if (!$force_ssl) {
       return;
     }
 
-    if (isset($output_file_config['www_prefix']) && in_array($output_file_config['www_prefix'], [
-        'add',
-        'remove',
-      ])) {
-      // Note: SSL is handled by the www_prefix plugin in this case.
+    // Force SSL is true, but we may not need to handle it, if the other plugin
+    // is doing so.
+    if (WWWPrefixPlugin::willHandleForceSSL($output_file_config)) {
       return;
     }
 
