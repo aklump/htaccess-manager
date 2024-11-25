@@ -1,3 +1,15 @@
+AuthName "Staging Server"
+AuthUserFile "/var/www/passwords"
+<IfModule mod_authz_groupfile.c>
+  AuthGroupFile /dev/null
+</IfModule>
+AuthType Basic
+Require valid-user
+Order deny,allow
+Deny from all
+Allow from 127.127.127.127
+Allow from 127.127.127.128
+Satisfy any
 
 #
 #
@@ -173,4 +185,11 @@ DirectoryIndex index.php index.html index.htm
   Header always set X-Content-Type-Options nosniff
   # Disable Proxy header, since it's an attack vector.
   RequestHeader unset Proxy
+</IfModule>
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+  RewriteCond %{HTTP_HOST} .
+  # Ensure the domain has the leading "www." prefix
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteRule ^ http%{ENV:protossl}://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
