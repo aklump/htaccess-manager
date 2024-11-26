@@ -58,5 +58,6 @@
   },
   "bin": [
     "bin/htaccess"
-  ]
+  ],
+  "license": "BSD-3-Clause"
 }
