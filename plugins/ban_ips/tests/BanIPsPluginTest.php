@@ -49,6 +49,22 @@ class BanIPsPluginTest extends TestCase {
     $this->assertStringContainsString("\ndeny from 1.1.1.1\n", $content);
     $this->assertStringContainsString("\ndeny from 2.2.2.2\n", $content);
   }
+  public function testInvokeWithoutInheritDefaultsToInheritTrue() {
+    $context = [];
+    $context['config'] = [
+      'ban_ips' => ['1.1.1.1'],
+    ];
+    $rc = $this->getResourceContext();
+
+    (new BanIPs())($rc['resource'], [
+      'ban_ips' => ['2.2.2.2'],
+    ], $context);
+    fclose($rc['resource']);
+
+    $content = file_get_contents($rc['path']);
+    $this->assertStringContainsString("\ndeny from 1.1.1.1\n", $content);
+    $this->assertStringContainsString("\ndeny from 2.2.2.2\n", $content);
+  }
 
   public function testInvokeWithEmptyConfigDoesNotChangeFile() {
     $rc = $this->getResourceContext();
@@ -58,7 +74,7 @@ class BanIPsPluginTest extends TestCase {
   }
 
   public function testGetPriority() {
-    $this->assertSame(0, BanIPs::getPriority());
+    $this->assertSame(30, BanIPs::getPriority());
   }
 
 }

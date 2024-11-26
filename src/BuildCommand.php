@@ -8,6 +8,7 @@ use AKlump\HtaccessManager\Helper\PrepareOutputPath;
 use AKlump\HtaccessManager\Helper\RemoveComments;
 use AKlump\HtaccessManager\Helper\SplitHeader;
 use AKlump\HtaccessManager\Output\Icons;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -62,7 +63,14 @@ class BuildCommand extends Command {
 
       if ($output_file_config['remove_comments'] ?? FALSE) {
         $content = file_get_contents($output_filepath);
-        list($header, $body) = (new SplitHeader())($content);
+        try {
+          list($header, $body) = (new SplitHeader())($content);
+        }
+        catch (RuntimeException $exception) {
+          $output->writeln(sprintf('<error>Failed to remove comments from %s.</error>', $file_id));
+
+          return Command::FAILURE;
+        }
         file_put_contents($output_filepath, $header . (new RemoveComments())($body));
       }
 

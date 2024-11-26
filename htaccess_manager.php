@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
-$class_loader = require __DIR__ . '/vendor/autoload.php';
+
+$class_loader = include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
 use AKlump\HtaccessManager\BuildCommand;
 use Symfony\Component\Console\Application;

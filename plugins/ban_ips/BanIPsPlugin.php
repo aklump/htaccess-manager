@@ -14,7 +14,7 @@ class BanIPs implements PluginInterface {
   }
 
   public static function getPriority(): int {
-    return 0;
+    return 30;
   }
 
   /**
@@ -22,7 +22,8 @@ class BanIPs implements PluginInterface {
    */
   public function __invoke($output_file_resource, array $output_file_config, array &$context = []): void {
     $ips = [];
-    if (!empty($context['config']['ban_ips_inherit'])) {
+    $inherit_global = $context['config']['ban_ips_inherit'] ?? TRUE;
+    if ($inherit_global) {
       $ips = $context['config']['ban_ips'] ?? [];
     }
     if (!empty($output_file_config['ban_ips'])) {
