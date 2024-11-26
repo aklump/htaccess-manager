@@ -56,11 +56,13 @@ class LoadConfig {
     }
     unset($path);
 
-    foreach ($output_file_config['source'] as &$path) {
-      if (!Path::isAbsolute($path) && strpos($path, 'http') !== 0) {
-        $path = Path::makeAbsolute($path, $config_dir);
+    if (isset($output_file_config['source'])) {
+      foreach ($output_file_config['source'] as &$path) {
+        if (!Path::isAbsolute($path) && strpos($path, 'http') !== 0) {
+          $path = Path::makeAbsolute($path, $config_dir);
+        }
+        unset($path);
       }
-      unset($path);
     }
   }
 

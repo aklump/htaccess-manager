@@ -130,8 +130,12 @@ class RedirectsPluginTest extends TestCase {
   public static function dataFortestInvokeQuotesSpecialCharsInUrlsProvider(): array {
     $tests = [];
     $tests[] = [
+      '/sites/default/files/downloads/Gamo%20Fact%20Sheet.pdf /sites/default/files/lesson-plans/gamo_fact_sheet.pdf',
+      '"^/sites/default/files/downloads/Gamo Fact Sheet.pdf/?$" /sites/default/files/lesson-plans/gamo_fact_sheet.pdf'
+    ];
+    $tests[] = [
       '/foo%20bar/baz /lorem.php',
-      '^"/foo bar/baz"/?$ /lorem.php',
+      '"^/foo bar/baz/?$" /lorem.php',
     ];
     $tests[] = [
       '(.+) /index.php?q=$1',

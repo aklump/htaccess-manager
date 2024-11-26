@@ -65,15 +65,13 @@ class RedirectsPlugin implements PluginInterface {
 
     foreach ($redirect_groups as $code => &$redirects) {
       $redirects = array_unique($redirects);
-      $quote_url = new QuoteUrl();
-      $redirects = array_map(function ($redirect) use ($code, $quote_url, $context) {
+      $redirects = array_map(function ($redirect) use ($code, $context) {
         $result = explode(' ', $redirect, 2);
 
         if (isset($result[1])) {
           $this->lintRedirectTarget($result[1], $code, $context);
         }
 
-        $result = array_map($quote_url, $result);
         array_unshift($result, $code);
 
         return $result;
@@ -91,7 +89,7 @@ class RedirectsPlugin implements PluginInterface {
   }
 
   private function wrapFromUrlWithMatchingPattern(string $from): string {
-    return "^$from/?\$";
+    return (new QuoteUrl())("^$from/?\$");
   }
 
   /**

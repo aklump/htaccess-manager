@@ -9,6 +9,10 @@ use AKlump\HtaccessManager\Plugin\PluginInterface;
 use AKlump\PluginFramework\GetPlugins;
 use Symfony\Component\Console\Application;
 
+if (!class_exists('\Symfony\Component\Filesystem\Path')) {
+  class_alias('\AKlump\HtaccessManager\Filesystem\Path', '\Symfony\Component\Filesystem\Path');
+}
+
 $plugins = (new GetPlugins(
   [
     __DIR__ . '/src/Plugin',

@@ -68,6 +68,9 @@ class BuildCommand extends Command {
         }
         catch (RuntimeException $exception) {
           $output->writeln(sprintf('<error>Failed to remove comments from %s.</error>', $file_id));
+          if (!defined('Command::FAILURE')) {
+            return 1;
+          }
 
           return Command::FAILURE;
         }
@@ -84,6 +87,10 @@ class BuildCommand extends Command {
     }
 
     // @url <https://symfony.com/doc/5.x/console.html>
+    if (!defined('Command::SUCCESS')) {
+      return 0;
+    }
+
     return Command::SUCCESS;
   }
 
