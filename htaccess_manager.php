@@ -27,6 +27,6 @@ $plugins = (new GetPlugins(
 
 $application = new Application();
 $application->setName('Htaccess Manager');
-$application->setVersion('0.0.1');
+$application->setVersion('0.0.2');
 $application->add(new BuildCommand(__FILE__, $plugins));
 $application->run();
