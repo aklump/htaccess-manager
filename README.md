@@ -21,10 +21,9 @@ A PHP tool for .htaccess management in your web projects.
 
 ## Install with Composer
 
-1. Because this is an unpublished package, you must define it's repository in
-   your project's _composer.json_ file. Add the following to _composer.json_ in
+1. This package requires some unpublished packages.  You must add the following to _composer.json_ in
    the `repositories` array:
-   
+
     ```json
     {
      "type": "github",
@@ -37,10 +36,6 @@ A PHP tool for .htaccess management in your web projects.
     {
      "type": "github",
      "url": "https://github.com/aklump/json-schema-merge"
-    },
-    {
-     "type": "github",
-     "url": "https://github.com/aklump/htaccess-manager"
     }
     ```
 1. Require this package:

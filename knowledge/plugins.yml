@@ -1,5 +1,2 @@
-#mermaid:
-#  width: 1000
-composer: {
+composer:
   requireDev: true
-}
