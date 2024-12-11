@@ -36,9 +36,7 @@ A PHP tool for .htaccess management in your web projects.
 
 - To view help execute `./vendor/bin/htaccess`
 
-## Contributing
-
-If you find this project useful... please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4E5KZHDQCEUV8&item_name=Gratitude%20for%20aklump%2Fhtaccess-manager).
+{{ funding|raw }}
 
 ## More Reading
 
