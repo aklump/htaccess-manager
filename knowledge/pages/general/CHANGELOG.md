@@ -13,3 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Nothing to list
+
+## [0.0.5] - 2025-01-01
+
+### Added
+
+- Support for Composer < 2.2

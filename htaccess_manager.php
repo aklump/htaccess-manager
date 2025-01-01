@@ -2,12 +2,30 @@
 <?php
 // SPDX-License-Identifier: BSD-3-Clause
 
-$class_loader = include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
 use AKlump\HtaccessManager\BuildCommand;
 use AKlump\HtaccessManager\Plugin\PluginInterface;
 use AKlump\PluginFramework\GetPlugins;
 use Symfony\Component\Console\Application;
+
+// https://getcomposer.org/doc/articles/vendor-binaries.md#finding-the-composer-autoloader-from-a-binary
+if (isset($GLOBALS['_composer_autoload_path'])) {
+  // As of Composer 2.2...
+  $_composer_autoload_path = $GLOBALS['_composer_autoload_path'];
+}
+else {
+  // < Composer 2.2
+  foreach ([
+             __DIR__ . '/../../autoload.php',
+             __DIR__ . '/../vendor/autoload.php',
+             __DIR__ . '/vendor/autoload.php',
+           ] as $_composer_autoload_path) {
+    if (file_exists($_composer_autoload_path)) {
+      break;
+    }
+  }
+}
+$class_loader = require_once $_composer_autoload_path;
 
 if (!class_exists('\Symfony\Component\Filesystem\Path')) {
   class_alias('\AKlump\HtaccessManager\Filesystem\Path', '\Symfony\Component\Filesystem\Path');
