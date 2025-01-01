@@ -41,7 +41,7 @@ A PHP tool for .htaccess management in your web projects.
 1. Require this package:
    
     ```
-    composer require --dev aklump/htaccess-manager:^0.0
+    composer require aklump/htaccess-manager:^0.0
     ```
 
 ## Configuration Special Notes

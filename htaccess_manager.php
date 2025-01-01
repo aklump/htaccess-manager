@@ -49,6 +49,6 @@ $plugins = (new GetPlugins(
 
 $application = new Application();
 $application->setName('Htaccess Manager');
-$application->setVersion('0.0.4');
+$application->setVersion('0.0.5');
 $application->add(new BuildCommand(__FILE__, $plugins));
 $application->run();
