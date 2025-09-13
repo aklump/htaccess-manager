@@ -27,7 +27,7 @@ class SourcePluginTest extends TestCase {
 
   public function testSourcePathIsMadeRelativeToConfigPathInComment() {
     $this->deleteTestFile('.cache');
-    $output_path = $this->getTestFileFilepath('.cache/', TRUE);
+    $this->getTestFileFilepath('.cache/', TRUE);
     $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess');
     $config_path = $this->getTestFileFilepath('alpha/config.yml');
     $config = (new LoadConfig([]))($config_path);
@@ -46,7 +46,7 @@ class SourcePluginTest extends TestCase {
 
   public function testStrangeValueThrows() {
     $this->deleteTestFile('.cache');
-    $output_path = $this->getTestFileFilepath('.cache/', TRUE);
+    $this->getTestFileFilepath('.cache/', TRUE);
     $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess');
     $config_path = $this->getTestFileFilepath('.cache/config.yml');
     $this->expectException(PluginFailedException::class);
@@ -68,7 +68,7 @@ class SourcePluginTest extends TestCase {
 
   public function testInvoke() {
     $this->deleteTestFile('.cache');
-    $output_path = $this->getTestFileFilepath('.cache/', TRUE);
+    $this->getTestFileFilepath('.cache/', TRUE);
     $output_path = $this->getTestFileFilepath('.cache/alpha.htaccess');
     $config_path = $this->getTestFileFilepath('alpha/config.yml');
     $config = (new LoadConfig([]))($config_path);

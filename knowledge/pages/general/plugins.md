@@ -20,7 +20,7 @@ plugins/source/
 
 ## PhpUnit Testing
 
-Tests are not yet handled automatically, so you have to do the following if your plugin has unti tests.
+Tests are not yet handled automatically, so you have to do the following if your plugin has unit tests.
 
 1. Register your test namespace in _composer.json_.
 
