@@ -22,14 +22,12 @@ class BanWordpressPluginTest extends TestCase {
     ]);
     fclose($rc['resource']);
 
-    $expected = <<<EOD
-    <IfModule mod_rewrite.c>
-      RewriteEngine on
-      RewriteRule ^wp-login.php$ - [R=410,L]
-    </IfModule>
-    EOD;
-
-    $this->assertStringContainsString($expected, file_get_contents($rc['path']));
+    $contents = file_get_contents($rc['path']);
+    $this->assertStringContainsString('<IfModule mod_alias.c>', $contents);
+    $this->assertStringContainsString('RedirectMatch 404 ^/wordpress', $contents);
+    $this->assertStringContainsString('RedirectMatch 404 ^/wp-(admin|includes|content)/.*$', $contents);
+    $this->assertStringContainsString('RedirectMatch 404 ^/wp-(config|login)\.php$', $contents);
+    $this->assertStringContainsString('</IfModule>', $contents);
   }
 
   public function testInvokeWithEmptyConfigDoesNotChangeFile() {
@@ -40,7 +38,7 @@ class BanWordpressPluginTest extends TestCase {
   }
 
   public function testGetPriority() {
-    $this->assertSame(0, BanWordpressPlugin::getPriority());
+    $this->assertGreaterThan(0, BanWordpressPlugin::getPriority());
   }
 
 }

@@ -14,7 +14,7 @@ class BanWordpressPlugin implements PluginInterface {
   }
 
   public static function getPriority(): int {
-    return 0;
+    return 20;
   }
 
   /**
@@ -26,10 +26,15 @@ class BanWordpressPlugin implements PluginInterface {
     }
     $this->resource = $output_file_resource;
     $this->fWritePluginStart();
-    $this->fWriteLine("<IfModule mod_rewrite.c>");
-    $this->fWriteLine("  RewriteEngine on");
-    $this->fWriteLine("  RewriteRule ^wp-login.php$ - [R=410,L]");
-    $this->fWriteLine("</IfModule>");
+    $this->fWriteLine('<IfModule mod_alias.c>');
+    // Use 404 for WordPress paths since they legitimately don't exist on this
+    // non-Wordpress site. This provides the least information to potential
+    // attackers while correctly indicating these resources were never here and
+    // won't be coming back.
+    $this->fWriteLine('  RedirectMatch 404 ^/wordpress');
+    $this->fWriteLine('  RedirectMatch 404 ^/wp-(admin|includes|content)/.*$');
+    $this->fWriteLine('  RedirectMatch 404 ^/wp-(config|login)\.php$');
+    $this->fWriteLine('</IfModule>');
     $this->fWritePluginStop();
   }
 }
