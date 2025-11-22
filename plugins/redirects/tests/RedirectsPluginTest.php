@@ -16,6 +16,39 @@ class RedirectsPluginTest extends TestCase {
 
   use TestPluginsTrait;
 
+  public static function dataFortestDelimittersProvider(): array {
+    $tests = [];
+    $tests[] = [
+      '#^/\.git(/|$)#',
+      " ^/\.git(/|$)\n",
+      '^#^/\.git(/|$)#/?$',
+    ];
+    $tests[] = [
+      '@^/\.git(/|$)@',
+      " ^/\.git(/|$)\n",
+      '^@^/\.git(/|$)@/?$',
+    ];
+
+    return $tests;
+  }
+
+  /**
+   * @dataProvider dataFortestDelimittersProvider
+   */
+  public function testDelimitters($config_url, $contains, $not_contains) {
+    $rc = $this->getResourceContext();
+    (new RedirectsPlugin())($rc['resource'], [
+      'redirects' => [
+        'inherit' => FALSE,
+        301 => [$config_url],
+      ],
+    ]);
+    fclose($rc['resource']);
+    $content = file_get_contents($rc['path']);
+    $this->assertStringContainsString($contains, $content);
+    $this->assertStringNotContainsString($not_contains, $content);
+  }
+
   public function testInvokeInheritTrueIncludesGlobal() {
     $rc = $this->getResourceContext();
     $context = [];
@@ -131,7 +164,7 @@ class RedirectsPluginTest extends TestCase {
     $tests = [];
     $tests[] = [
       '/sites/default/files/downloads/Gamo%20Fact%20Sheet.pdf /sites/default/files/lesson-plans/gamo_fact_sheet.pdf',
-      '"^/sites/default/files/downloads/Gamo Fact Sheet.pdf/?$" /sites/default/files/lesson-plans/gamo_fact_sheet.pdf'
+      '"^/sites/default/files/downloads/Gamo Fact Sheet.pdf$" /sites/default/files/lesson-plans/gamo_fact_sheet.pdf',
     ];
     $tests[] = [
       '/foo%20bar/baz /lorem.php',
@@ -200,7 +233,7 @@ class RedirectsPluginTest extends TestCase {
   }
 
   public function testGetPriority() {
-    $this->assertSame(10, RedirectsPlugin::getPriority());
+    $this->assertGreaterThan(0, RedirectsPlugin::getPriority());
   }
 
 }

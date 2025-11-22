@@ -6,6 +6,19 @@ You may also use this to return 1XX,2XX,4XX,5XX codes when a certain URL is hit.
 
 ## Regex is supported, see example below.
 
+## Path Preprocessing During Build
+
+This plugin tries to "improve" your configured path by adding regexp syntax to it. This is why you will see small changes in the generated output file compared to your configued paths. In some cases this is undesired.
+
+To **prevent regexp escaping/modification** of your configuation path, you must use delimiters, either `#` or `@`.  **Using `/` as delimitter is NOT supported because that is a common URL character.**  Both examples below will result in the same output, which is `^/\.git(/|$)`; that is to say the only processing that occurs is the stripping of the delimitters.
+
+```yaml
+redirects:
+  404:
+    - '#^/\.git(/|$)#'
+    - '@^/\.git(/|$)@'
+```
+
 ## Other status codes can be returned by giving the numeric status code as the value of status.
 
 * If the status is between 300 and 399, the URL argument must be present.

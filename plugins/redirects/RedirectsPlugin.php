@@ -6,6 +6,7 @@ use AKlump\HtaccessManager\Config\Defaults;
 use AKlump\HtaccessManager\Exception\ConfigurationException;
 use AKlump\HtaccessManager\Plugin\PluginInterface;
 use AKlump\HtaccessManager\Plugin\PluginTrait;
+use Symfony\Component\Filesystem\Path;
 
 class RedirectsPlugin implements PluginInterface {
 
@@ -22,7 +23,7 @@ class RedirectsPlugin implements PluginInterface {
    * @inheritDoc
    */
   public static function getPriority(): int {
-    return 10;
+    return 20;
   }
 
   /**
@@ -89,7 +90,31 @@ class RedirectsPlugin implements PluginInterface {
   }
 
   private function wrapFromUrlWithMatchingPattern(string $from): string {
+    $first_char = substr($from, 0, 1);
+    $last_char = substr($from, -1);
+    if ($first_char === $last_char && ($first_char === '@' || $first_char === '#')) {
+      $from = substr($from, 1, -1);
+
+      return (new QuoteUrl())($from);
+    }
+
+    // Use pathinfo to determine if $from is a file
+    if ($this->isFile($from)) {
+      // It's a file, anchor regex without trailing slash
+      return (new QuoteUrl())("^$from\$");
+    }
+
+    // No extension, treat as directory-like, allow optional trailing slash
     return (new QuoteUrl())("^$from/?\$");
+  }
+
+  private function isFile(string $value): bool {
+    $extension = Path::getExtension($value);
+    if (empty($extension)) {
+      return FALSE;
+    }
+
+    return preg_match('/[a-z]/i', $extension);
   }
 
   /**
