@@ -14,6 +14,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing to list
 
+;;## [0.0.7] - 2025-11-21
+### Added
+- Support for disabling path processing using @ or # delimiters; see README.md
+- SecureConfig plugin to enhance security by blocking access to sensitive configuration files
+- More Wordpress paths to the Ban Wordpress plugin.
+  
+### Changed
+- lorem
+- 🚨BREAKING CHANGE! lorem
+  
+### Deprecated
+- lorem
+  
+### Removed
+- lorem
+  
+### Fixed
+- lorem
+   
+### Security
+- lorem
+  
+
+
+
 ## [0.0.5] - 2025-01-01
 
 ### Added
