@@ -86,7 +86,7 @@ files:
     # so that Drupal doesn't have to bootstrap nor handle them.
     ban_wordpress: true
 
-    # Return 410 for configuration paths.
+    # Return 4XX for common configuration paths.
     secure_config:
       context: any
 

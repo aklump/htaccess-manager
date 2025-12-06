@@ -30,7 +30,9 @@ class SecureConfig implements PluginInterface {
     // producing an error. For security- critical blocks, failing loudly is
     // safer and ensures predictable behavior.
     $this->fWriteLine('RedirectMatch 403 ^/.*\.env[^/]*$');
+    $this->fWriteLine('RedirectMatch 403 ^/.*\bclasswithtostring.php$');
     $this->fWriteLine('RedirectMatch 403 ^/.*\b(phpinfo|php_info|info)\b\.php$');
+    $this->fWriteLine('RedirectMatch 403 ^/.*\b(php)\b\.info$');
     $this->fWriteLine('RedirectMatch 403 ^/.*\.?(services|config|settings)(\.[^/]+)?\.(ya?ml|config|ini)$');
     $this->fWriteLine('RedirectMatch 403 ^/.*\b(composer\.json|package\.json|composer\.lock|package-lock\.json|yarn\.lock)$');
     $this->fWritePluginStop();
