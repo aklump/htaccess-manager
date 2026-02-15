@@ -11,6 +11,7 @@
     "symfony/console": "^4.4 || ^5.4 || ^6",
     "symfony/filesystem": "^4.4 || ^5.4 || ^6",
     "symfony/yaml": "^4.4 || ^5.4 || ^6",
+    "symfony/http-foundation": "^4.4 || ^5.4 || ^6",
     "ext-curl": "*",
     "aklump/json-schema-validation": "^0.0",
     "aklump/json-schema-loading": "^0.0",

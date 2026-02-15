@@ -37,13 +37,23 @@ class RedirectsPlugin implements PluginInterface {
     $this->resource = $output_file_resource;
 
     $this->fWritePluginStart();
+    $error_handlers_by_code = $this->getErrorHandlers($output_file_config, $context);
     foreach ($redirects_by_code as $redirects) {
       foreach ($redirects as $redirect) {
         if (!empty($redirect[2])) {
           $this->fWriteLine('RedirectMatch %d %s %s', $redirect[0], $this->wrapFromUrlWithMatchingPattern($redirect[1]), $redirect[2]);
         }
         else {
-          $this->fWriteLine('RedirectMatch %d %s', $redirect[0], $this->wrapFromUrlWithMatchingPattern($redirect[1]));
+          if (!isset($error_handlers_by_code[$redirect[0]])) {
+            $this->fWriteLine('RedirectMatch %d %s', $redirect[0], $this->wrapFromUrlWithMatchingPattern($redirect[1]));
+          }
+          else {
+            (new WriteErrorHandler())($redirect[0], $error_handlers_by_code[$redirect[0]]);
+            $error_handler = $error_handlers_by_code[$redirect[0]];
+            $error_handler = '/' . Path::makeRelative($error_handler, '/Users/aklump/Code/Projects/ContechServices/AuroraTimesheet/site/app/web');
+
+            $this->fWriteLine('RewriteRule %s %s [L]', $this->wrapFromUrlWithMatchingPattern($redirect[1]), $error_handler);
+          }
         }
       }
     }
@@ -81,6 +91,23 @@ class RedirectsPlugin implements PluginInterface {
     unset($redirects);
 
     return $redirect_groups;
+  }
+
+  private function getErrorHandlers(array $output_file_config, array $context): array {
+    $error_handlers = $output_file_config['redirects']['error_handlers'] ?? [];
+    $global = $context['config']['redirects']['error_handlers'] ?? [];
+    if ($global) {
+      $inherit_global = TRUE === ($output_file_config['redirects']['inherit'] ?? TRUE);
+      if ($inherit_global) {
+        foreach ($global as $code => $error_handler) {
+          $error_handlers[$code] = $error_handler;
+        }
+      }
+    }
+
+    return array_map(function ($handler) use ($context) {
+      return Path::makeAbsolute($handler, dirname($context['config_path']));
+    }, $error_handlers);
   }
 
   private function onlyRedirects(array $redirect_groups): array {
