@@ -1,14 +1,14 @@
 <?php
 
-namespace AKlump\HtaccessManager\redirects;
+namespace AKlump\HtaccessManager\Plugin;
 
 use AKlump\HtaccessManager\Config\Defaults;
 use AKlump\HtaccessManager\Exception\ConfigurationException;
-use AKlump\HtaccessManager\Plugin\PluginInterface;
-use AKlump\HtaccessManager\Plugin\PluginTrait;
 use Symfony\Component\Filesystem\Path;
 
 class RedirectsPlugin implements PluginInterface {
+
+  const ERROR_HANDLER_PREFIX = '_handle-';
 
   use PluginTrait;
 
@@ -36,23 +36,28 @@ class RedirectsPlugin implements PluginInterface {
     }
     $this->resource = $output_file_resource;
 
+    // Don’t wrap that RedirectMatch block in <IfModule mod_alias.c>. Reason:
+    // these rules are security-ish (blocking access to sensitive-ish paths). If
+    // mod_alias were missing and you wrapped them, Apache would just skip the
+    // whole block and you’d silently lose protection. Failing loudly is better.
     $this->fWritePluginStart();
     $error_handlers_by_code = $this->getErrorHandlers($output_file_config, $context);
     foreach ($redirects_by_code as $redirects) {
       foreach ($redirects as $redirect) {
         if (!empty($redirect[2])) {
-          $this->fWriteLine('RedirectMatch %d %s %s', $redirect[0], $this->wrapFromUrlWithMatchingPattern($redirect[1]), $redirect[2]);
+          $pattern = (new PreparePattern())($redirect[1], new RedirectMatch());
+          $this->fWriteLine('RedirectMatch %d %s %s', $redirect[0], $pattern, $redirect[2]);
         }
         else {
           if (!isset($error_handlers_by_code[$redirect[0]])) {
-            $this->fWriteLine('RedirectMatch %d %s', $redirect[0], $this->wrapFromUrlWithMatchingPattern($redirect[1]));
+            $pattern = (new PreparePattern())($redirect[1], new RedirectMatch());
+            $this->fWriteLine('RedirectMatch %d %s', $redirect[0], $pattern);
           }
           else {
-            (new WriteErrorHandler())($redirect[0], $error_handlers_by_code[$redirect[0]]);
-            $error_handler = $error_handlers_by_code[$redirect[0]];
-            $error_handler = '/' . Path::makeRelative($error_handler, '/Users/aklump/Code/Projects/ContechServices/AuroraTimesheet/site/app/web');
-
-            $this->fWriteLine('RewriteRule %s %s [L]', $this->wrapFromUrlWithMatchingPattern($redirect[1]), $error_handler);
+            $error_handler = self::ERROR_HANDLER_PREFIX . $redirect[0] . '.php';
+            (new WriteErrorHandler())($redirect[0], $error_handlers_by_code[$redirect[0]] . DIRECTORY_SEPARATOR . $error_handler);
+            $pattern = (new PreparePattern())($redirect[1], new RewriteRule());
+            $this->fWriteLine('RewriteRule %s %s [L]', $pattern, $error_handler);
           }
         }
       }
@@ -99,49 +104,35 @@ class RedirectsPlugin implements PluginInterface {
     if ($global) {
       $inherit_global = TRUE === ($output_file_config['redirects']['inherit'] ?? TRUE);
       if ($inherit_global) {
-        foreach ($global as $code => $error_handler) {
-          $error_handlers[$code] = $error_handler;
+        foreach ($global as $webroot => $status_codes) {
+          $error_handlers[$webroot] = $status_codes;
         }
       }
     }
+    if (empty($error_handlers)) {
+      return [];
+    }
+    $webroot = $output_file_config['webroot'] ?? NULL;
+    if (empty($webroot)) {
+      throw new ConfigurationException(sprintf('files.%s.webroot must be set in order to use error handlers.', $context['output_file_id'] ?? Defaults::OUTPUT_FILE_ID));
+    }
+    $webroot = Path::makeAbsolute($webroot, dirname($context['config_path']));
+    if (!file_exists($webroot)) {
+      throw new ConfigurationException(sprintf('files.%s.webroot must be a valid directory.', $context['output_file_id'] ?? Defaults::OUTPUT_FILE_ID));
+    }
 
-    return array_map(function ($handler) use ($context) {
-      return Path::makeAbsolute($handler, dirname($context['config_path']));
-    }, $error_handlers);
+    $by_code = [];
+    foreach ($error_handlers as $status_code) {
+      $by_code[$status_code] = $webroot;
+    }
+
+    return $by_code;
   }
 
   private function onlyRedirects(array $redirect_groups): array {
     return array_filter($redirect_groups, function ($key) {
       return is_numeric($key);
     }, ARRAY_FILTER_USE_KEY);
-  }
-
-  private function wrapFromUrlWithMatchingPattern(string $from): string {
-    $first_char = substr($from, 0, 1);
-    $last_char = substr($from, -1);
-    if ($first_char === $last_char && ($first_char === '@' || $first_char === '#')) {
-      $from = substr($from, 1, -1);
-
-      return (new QuoteUrl())($from);
-    }
-
-    // Use pathinfo to determine if $from is a file
-    if ($this->isFile($from)) {
-      // It's a file, anchor regex without trailing slash
-      return (new QuoteUrl())("^$from\$");
-    }
-
-    // No extension, treat as directory-like, allow optional trailing slash
-    return (new QuoteUrl())("^$from/?\$");
-  }
-
-  private function isFile(string $value): bool {
-    $extension = Path::getExtension($value);
-    if (empty($extension)) {
-      return FALSE;
-    }
-
-    return preg_match('/[a-z]/i', $extension);
   }
 
   /**

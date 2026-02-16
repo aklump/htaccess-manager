@@ -2,14 +2,14 @@
 
 namespace AKlump\HtaccessManager\Tests\Unit\Plugin;
 
-require_once __DIR__ . '/../QuoteUrl.php';
+require_once __DIR__ . '/../HandleQuotations.php';
 
-use AKlump\HtaccessManager\redirects\QuoteUrl;
+use AKlump\HtaccessManager\Plugin\HandleQuotations;
 
 /**
- * @covers \AKlump\HtaccessManager\redirects\QuoteUrl
+ * @covers \AKlump\HtaccessManager\Plugin\HandleQuotations
  */
-class QuoteUrlTest extends \PHPUnit\Framework\TestCase {
+class HandleQuotationsTest extends \PHPUnit\Framework\TestCase {
 
   public static function dataFortestInvokeProvider(): array {
     $tests = [];
@@ -31,6 +31,6 @@ class QuoteUrlTest extends \PHPUnit\Framework\TestCase {
    * @dataProvider dataFortestInvokeProvider
    */
   public function testInvoke($url, $expected) {
-    $this->assertSame($expected, (new QuoteUrl())($url));
+    $this->assertSame($expected, (new HandleQuotations())($url));
   }
 }

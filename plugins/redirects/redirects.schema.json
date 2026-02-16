@@ -10,6 +10,13 @@
           "properties": {
             "inherit": {
               "type": "boolean"
+            },
+            "error_handlers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[12345]\\d{2}$"
+              }
             }
           },
           "patternProperties": {

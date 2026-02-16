@@ -66,6 +66,11 @@ files:
       - web/.htaccess.prod
       - install/default/.htaccess.prod
 
+    # A path relative to the config file to the webroot.  This is used to
+    # determine the output location of error handler scripts, which must go
+    # in the root of the webroot.
+    webroot: ../../web
+
     # A list of source files to merge together.  They are merged in the order as
     # listed.
     source:
@@ -120,8 +125,18 @@ files:
 
     # Redirects defined at the file level are only added to this file.
     redirects:
+
+      # By adding error_handlers with status codes, said status codes will be
+      # sent to the error handlers instead of Apaches' native error handling,
+      # which sometimes causes errors to be handled by your application, if
+      # Apache routes errors to index.php.  You can reduce application overhead
+      # by using this feature.
+      error_handlers: [ 404 ]
+
       301:
         - /another/old/path /another/new/path
+      404:
+        - admin.php
 
   # This section configures generation of our Drupal 7 webroot .htaccess file
   # for the staging website.

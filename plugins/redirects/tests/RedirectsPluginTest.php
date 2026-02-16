@@ -2,15 +2,13 @@
 
 namespace AKlump\HtaccessManager\Tests\Unit\Plugin;
 
-require_once __DIR__ . '/../RedirectsPlugin.php';
-
-use AKlump\HtaccessManager\Exception\ConfigurationException;
-use AKlump\HtaccessManager\redirects\RedirectsPlugin;
+use AKlump\HtaccessManager\Plugin\RedirectsPlugin;
 use AKlump\HtaccessManager\Tests\Unit\TestingTraits\TestPluginsTrait;
 use PHPUnit\Framework\TestCase;
+use AKlump\HtaccessManager\Exception\ConfigurationException;
 
 /**
- * @covers \AKlump\HtaccessManager\redirects\RedirectsPlugin
+ * @covers \AKlump\HtaccessManager\Plugin\RedirectsPlugin
  */
 class RedirectsPluginTest extends TestCase {
 
@@ -164,7 +162,7 @@ class RedirectsPluginTest extends TestCase {
     $tests = [];
     $tests[] = [
       '/sites/default/files/downloads/Gamo%20Fact%20Sheet.pdf /sites/default/files/lesson-plans/gamo_fact_sheet.pdf',
-      '"^/sites/default/files/downloads/Gamo Fact Sheet.pdf$" /sites/default/files/lesson-plans/gamo_fact_sheet.pdf',
+      '"^/sites/default/files/downloads/Gamo Fact Sheet\.pdf$" /sites/default/files/lesson-plans/gamo_fact_sheet.pdf',
     ];
     $tests[] = [
       '/foo%20bar/baz /lorem.php',
@@ -172,7 +170,7 @@ class RedirectsPluginTest extends TestCase {
     ];
     $tests[] = [
       '(.+) /index.php?q=$1',
-      '^(.+)/?$ /index.php?q=$1',
+      '^/(.+)/?$ /index.php?q=$1',
     ];
 
     return $tests;

@@ -34,7 +34,21 @@
   ],
   "autoload": {
     "psr-4": {
-      "AKlump\\HtaccessManager\\": "src",
+      "AKlump\\HtaccessManager\\": [
+        "src"
+      ],
+      "AKlump\\HtaccessManager\\Plugin\\": [
+        "plugins/ban_ips",
+        "plugins/ban_wordpress",
+        "plugins/force_ssl",
+        "plugins/hide_files",
+        "plugins/hotlinks",
+        "plugins/http_auth",
+        "plugins/redirects",
+        "plugins/secure_config",
+        "plugins/source",
+        "plugins/www_prefix"
+      ],
       "AKlump\\PluginFramework\\": "aklump_plugin_framework"
     }
   },
@@ -44,12 +58,12 @@
         "./tests_unit"
       ],
       "AKlump\\HtaccessManager\\Tests\\Unit\\Plugin\\": [
-        "./tests_unit/Plugin",
         "./plugins/ban_ips/tests",
         "./plugins/ban_wordpress/tests",
         "./plugins/http_auth/tests",
         "./plugins/source/tests",
-        "./plugins/www_prefix/tests"
+        "./plugins/www_prefix/tests",
+        "./plugins/redirects/tests"
       ]
     }
   },
