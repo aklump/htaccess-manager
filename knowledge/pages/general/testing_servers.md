@@ -1,3 +1,8 @@
+<!--
+id: testing_servers
+tags: ''
+-->
+
 # Testing Servers
 
 you can check if your server will respect rewrite rules by doing the following
