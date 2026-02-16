@@ -54,6 +54,26 @@ A PHP tool for .htaccess management in your web projects.
 
 - To view help execute `./vendor/bin/htaccess`
 
+## Environment Variable Substitution
+
+The configuration file supports environment variable substitution. You can use `$VAR_NAME` syntax in both keys and values of the YAML file. This is useful for creating template-like configurations that can be customized per project.
+
+```yaml
+files:
+  $PROJ:
+    title: $PROJ_TITLE
+    valid_hosts:
+      - https://example.com
+    output:
+      - $PROJ/web/.htaccess
+```
+
+When running the build command, provide the environment variables:
+
+```bash
+PROJ=myproject PROJ_TITLE="AKlump's Web Factory" ./bin/htaccess build config.yaml
+```
+
 ## Sponsor this project
 
 

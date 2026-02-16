@@ -2,6 +2,7 @@
 
 namespace AKlump\HtaccessManager\Config;
 
+use AKlump\HtaccessManager\Helper\SubstituteEnvVars;
 use AKlump\HtaccessManager\Plugin\MergePluginSchemas;
 use AKlump\JsonSchema\JsonDecodeLossless;
 use AKlump\JsonSchema\LoadSchema;
@@ -38,6 +39,7 @@ class LoadConfig {
       throw new InvalidArgumentException(sprintf('Missing configuration file: %s', $config_path));
     }
     $config = Yaml::parseFile($config_path);
+    $config = (new SubstituteEnvVars())($config);
     $config = (new NormalizeConfig())($config);
     $this->validateSchema($config);
 
