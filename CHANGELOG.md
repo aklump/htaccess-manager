@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing to list
 
+## [0.0.10] - 2026-07-11
+
+### Added
+
+- **Ban Wordpress**: Added support for fast PHP-based error responses using the `redirects.error_handlers` strategy. When configured, it now generates `_handle-404.php` and uses `RewriteRule` for more efficient blocking of WordPress paths.
+- **Testing**: Significant increase in test coverage across the project, including new unit tests for `PluginFailedException`, `Path`, `SubstituteEnvVars`, `FileHeader`, and `MergePluginSchemas`.
+
+### Changed
+
+- Standardized regex pattern generation in `BanWordpressPlugin` to ensure consistency between `RedirectMatch` and `RewriteRule` outputs.
+
+### Fixed
+
+- **Filesystem**: Added missing `AKlump\HtaccessManager\Filesystem\Path::getExtension()` method to safely extract file extensions.
+
 ## [0.0.9] - 2026-02-16
 
 ### Added

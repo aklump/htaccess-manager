@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en" data-knowledge-id="dae9a8aa-ead5-459e-b65e-934b35c628e7">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.9">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.9">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.9">
+        <title>Htaccess Manager</title>
+  </head>
+<body class="my-5">
+
+<header class="header bg-light fixed-top p-2 pt-1">
+  <div class="container-md">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="header__breadcrumbs flex-shrink-0 flex-grow-1 me-3">
+        <nav aria-label="breadcrumb">
+  <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+      <a class="fw-bold" href="../../index.html">Htaccess Manager</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a class="fw-bold" href="#" data-bs-toggle="offcanvas"
+         data-bs-target="#table-of-contents"
+         aria-controls="table-of-contents">TOC</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="readme.html">General</a></li>
+  </ol>
+</nav>
+
+      </div>
+      <div class="header__tags me-3">  </div>
+      <div class="header__page-numbers flex-shrink-1">1
+        / 4</div>
+    </div>
+  </div>
+</header>
+
+<main class="container-md flex-column">
+  <div class="row mb-5 pt-5">
+    <article class="col">
+      <h1 class="mb-4 text-primary">Htaccess Manager</h1>
+      <p><img class="img-fluid" src="../../images/htaccess.jpg" alt="htaccess" /></p>
+<h2>Summary</h2>
+<p>A PHP tool for .htaccess management in your web projects.</p>
+<ul>
+<li>Allows you to include <em>.htaccess</em> files in other <em>.htaccess</em> files.</li>
+<li>Work with smaller files then combine using <code>./bin/htaccess build</code></li>
+<li>Share common snippets across different <em>.htaccess</em> files.</li>
+<li>Simplified URL redirection; remap old URLs to new without nasty syntax.</li>
+<li>Merge in remote <em>.htaccess</em> source files on build (think Drupal web root <em>.htaccess</em> + custom <em>.htaccess</em> directives).</li>
+<li>Manage banned IPs in a separate file or add them to the YAML configuration.</li>
+</ul>
+<h2>Quick Start</h2>
+<ul>
+<li>Create a YAML configuration file in a secure location in your project.</li>
+<li>Refer to <em>config.example.yml</em> as a guide and optionally, delete when done.</li>
+<li>Lastly, build your files using <code>./vendor/bin/htaccess build path/to/your/config.yml</code></li>
+</ul>
+<h2>Install with Composer</h2>
+<ol>
+<li><p>This package requires some unpublished packages.  You must add the following to <em>composer.json</em> in
+the <code>repositories</code> array:</p>
+<pre><code class="json"> {
+  "type": "github",
+  "url": "https://github.com/aklump/json-schema-loading"
+ },
+ {
+  "type": "github",
+  "url": "https://github.com/aklump/json-schema-validation"
+ },
+ {
+  "type": "github",
+  "url": "https://github.com/aklump/json-schema-merge"
+ }
+</code></pre>
+</li>
+<li><p>Require this package:</p>
+<pre><code> composer require aklump/htaccess-manager:^0.0
+</code></pre>
+</li>
+</ol>
+<h2>Configuration Special Notes</h2>
+<ul>
+<li>You must list one or more hosts in <code>valid_hosts</code>, including their http or https protocol.</li>
+<li>Forced SSL redirection is detected based on the <code>valid_hosts</code> array; <code>force_ssl</code> will be set to <code>true</code> if all <code>valid_hosts</code> use the <em>https</em> protocol. You may override auto-detection by setting <code>force_ssl</code> to <code>true</code> or <code>false</code>.</li>
+<li>Adding or removing <code>www.</code> is detected based on the <code>valid_hosts</code> array. It is set to <code>add</code> if all <code>valid_hosts</code> have <code>www.</code>, <code>remove</code> if all <code>valid_hosts</code> do not have <code>www.</code>. When neither <code>add</code> nor <code>remove</code> no redirection takes place. You may override auto-detection by setting <code>www_prefix</code> to <code>add</code>, <code>remove</code>, or <code>default</code>.</li>
+</ul>
+<h2>Usage</h2>
+<ul>
+<li>To view help execute <code>./vendor/bin/htaccess</code></li>
+</ul>
+<h2>Environment Variable Substitution</h2>
+<p>The configuration file supports environment variable substitution. You can use <code>$VAR_NAME</code> or <code>${VAR_NAME}</code> syntax in both keys and values of the YAML file. Using <code>${VAR_NAME}</code> is recommended to avoid ambiguity when a variable is immediately followed by other characters. This is useful for creating template-like configurations that can be customized per project.</p>
+<pre><code class="yaml">files:
+  ${PROJ_ID}:
+    title: $PROJ_TITLE
+    valid_hosts:
+      - https://example.com
+    output:
+      - ${PROJ_DIR}/web/.htaccess
+</code></pre>
+<p>When running the build command, provide the environment variables:</p>
+<pre><code class="bash">PROJ_ID=myproject PROJ_TITLE="AKlump's Web Factory" PROJ_DIR=./path ./bin/htaccess build config.yaml
+</code></pre>
+<h2>Support My Open Source Work</h2>
+<p>If you’ve found this project useful, please consider supporting its ongoing maintenance. Even a small contribution helps fund updates, fixes, and new ideas.</p>
+<ul>
+<li><p><a href="https://github.com/sponsors/aklump">Sponsor on GitHub</a></p>
+</li>
+<li><p><a href="https://buymeacoffee.com/aklump">Buy Me a Coffee</a></p>
+</li>
+<li><p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=4E5KZHDQCEUV8&amp;item_name=Open%20Source%20Sponsorship">paypal.com</a></p>
+</li>
+</ul>
+<h2>More Reading</h2>
+<ul>
+<li><a href="https://www.askapache.com/htaccess">THE Ultimate Htaccess</a></li>
+<li><a href="https://www.askapache.com/htaccess/mod_rewrite-variables-cheatsheet/">Mod_Rewrite Variables Cheatsheet</a></li>
+<li><a href="https://www.askapache.com/category/htaccess/">Htaccess</a></li>
+</ul>
+<h2>Troubleshooting</h2>
+<h3>4xx redirects are not working</h3>
+<p>I'm not sure why, but on some servers they do not work. Possible reasons:</p>
+<ol>
+<li>Apache version?</li>
+<li>VirtualHost config hijacking?</li>
+<li>Drupal conflict?</li>
+</ol>
+    </article>
+  </div>
+</main>
+
+  <footer class="footer d-flex justify-content-center">
+    <div class="flex-column justify-content-center">
+              Version:
+        <strong>0.0.9</strong>
+        &bull;
+                    Last Update: <strong>7/11/2026</strong>
+          </div>
+  </footer>
+
+
+<nav class="nav d-flex justify-content-center align-items-center
+  fixed-bottom">
+  <div class="btn-group flex-fill">
+              <a href="readme.html" class="btn nav__prev-chapter btn-secondary"><i class="bi
+      bi-caret-left-fill"></i> Htaccess Manager</a>
+  
+    
+              <span class="btn nav__prev-page js-nav__prev-page
+    btn-primary"></span>
+  
+    
+    <a class="nav__toc btn btn-light" href="#"
+       data-bs-toggle="offcanvas"
+       data-bs-target="#table-of-contents"
+       aria-controls="table-of-contents"><i class="bi
+           bi-list-ol"></i></a>
+    
+              <a href="plugins.html" class="btn nav__next-page js-nav__next-page
+    btn-primary"><i class="bi bi-file-earmark"></i> Plugins <i class="bi
+       bi-caret-right-fill"></i></a>
+  
+    
+              <span class="btn nav__next-chapter btn-secondary "></span>
+  
+  </div>
+</nav>
+
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="table-of-contents"
+     aria-labelledby="table-of-contents__title" data-bs-keyboard="true">
+  <div class="offcanvas-header">
+    <h1 class="h6 offcanvas-title js-chapter-list-title"
+        id="table-of-contents__title">All
+      Chapters
+      &amp; Pages</h1>
+    <h1 class="d-none h6 offcanvas-title js-search-results-title"
+        id="table-of-contents__title">Search Results</h1>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+          <input class="js-search form-control mb-4" type="search"
+             placeholder="Search docs..."
+             aria-label="Search">
+      <div class="js-search-results d-none">
+        <h2 class="h4 mt-4">Matched Pages</h2>
+        <ol class="list-unstyled">
+                                              <li data-page="readme" value="1">
+      <a class="js-page-link" href="readme.html">Htaccess Manager<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="plugins" value="2">
+      <a class="js-page-link" href="plugins.html">Plugins<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="testing_servers" value="3">
+      <a class="js-page-link" href="testing_servers.html">Testing Servers<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="changelog" value="4">
+      <a class="js-page-link" href="changelog.html">Changelog<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                              </ol>
+      </div>
+        
+    <div class="js-chapter-list">
+              <h2 class="h4 mt-4">General</h2>
+        <ol>
+                                <li data-page="readme" value="1">
+      <a class="js-page-link" href="readme.html">Htaccess Manager</a>
+    </li>
+  
+                                <li data-page="plugins" value="2">
+      <a class="js-page-link" href="plugins.html">Plugins</a>
+    </li>
+  
+                                <li data-page="testing_servers" value="3">
+      <a class="js-page-link" href="testing_servers.html">Testing Servers</a>
+    </li>
+  
+                                <li data-page="changelog" value="4">
+      <a class="js-page-link" href="changelog.html">Changelog</a>
+    </li>
+  
+                  </ol>
+          </div>
+  </div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1"
+     aria-labelledby="modal-title" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="js-modal-title modal-title" id="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mt-1 mb-4">
+                  </p>
+        
+                
+        <ul class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="readme.html">Htaccess Manager</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="plugins.html">Plugins</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="testing_servers.html">Testing Servers</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="changelog.html">Changelog</a>
+                              </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.9"></script>
+  <script src="../../dist/lunr.js?ver=0.0.9"></script>
+  <script src="../../dist/knowledge.min.js?ver=0.0.9"></script>
+
+</body>
+</html>
