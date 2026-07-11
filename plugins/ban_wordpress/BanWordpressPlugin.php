@@ -2,6 +2,10 @@
 
 namespace AKlump\HtaccessManager\Plugin;
 
+use AKlump\HtaccessManager\Config\Defaults;
+use AKlump\HtaccessManager\Exception\ConfigurationException;
+use Symfony\Component\Filesystem\Path;
+
 class BanWordpressPlugin implements PluginInterface {
 
   use PluginTrait;
@@ -26,15 +30,48 @@ class BanWordpressPlugin implements PluginInterface {
     }
     $this->resource = $output_file_resource;
     $this->fWritePluginStart();
-    $this->fWriteLine('<IfModule mod_alias.c>');
-    // Use 404 for WordPress paths since they legitimately don't exist on this
-    // non-Wordpress site. This provides the least information to potential
-    // attackers while correctly indicating these resources were never here and
-    // won't be coming back.
-    $this->fWriteLine('  RedirectMatch 404 ^/wordpress');
-    $this->fWriteLine('  RedirectMatch 404 ^/wp-(admin|includes|content)/.*$');
-    $this->fWriteLine('  RedirectMatch 404 ^/wp-(config|login)\.php$');
-    $this->fWriteLine('</IfModule>');
+
+    $error_handlers = $output_file_config['redirects']['error_handlers'] ?? [];
+    $global = $context['config']['redirects']['error_handlers'] ?? [];
+    if ($global) {
+      $inherit_global = TRUE === ($output_file_config['redirects']['inherit'] ?? TRUE);
+      if ($inherit_global) {
+        $error_handlers = array_merge($error_handlers, $global);
+      }
+    }
+    $use_error_handler = in_array(404, $error_handlers);
+
+    $patterns = [
+      '/wordpress',
+      '/wp-(admin|includes|content)/.*',
+      '/wp-(config|login)\.php',
+    ];
+
+    if ($use_error_handler) {
+      $webroot = $output_file_config['webroot'] ?? NULL;
+      if (empty($webroot)) {
+        throw new ConfigurationException(sprintf('files.%s.webroot must be set in order to use error handlers.', $context['output_file_id'] ?? Defaults::OUTPUT_FILE_ID));
+      }
+      $webroot = Path::makeAbsolute($webroot, dirname($context['config_path']));
+      if (!file_exists($webroot)) {
+        throw new ConfigurationException(sprintf('files.%s.webroot must be a valid directory.', $context['output_file_id'] ?? Defaults::OUTPUT_FILE_ID));
+      }
+
+      $error_handler = '_handle-404.php';
+      (new WriteErrorHandler())(404, $webroot . DIRECTORY_SEPARATOR . $error_handler);
+      foreach ($patterns as $pattern) {
+        $pattern = (new PreparePattern())($pattern, new RewriteRule());
+        $this->fWriteLine('RewriteRule %s %s [L]', $pattern, $error_handler);
+      }
+    }
+    else {
+      $this->fWriteLine('<IfModule mod_alias.c>');
+      foreach ($patterns as $pattern) {
+        $pattern = (new PreparePattern())($pattern, new RedirectMatch());
+        $this->fWriteLine('  RedirectMatch 404 %s', $pattern);
+      }
+      $this->fWriteLine('</IfModule>');
+    }
     $this->fWritePluginStop();
   }
 }
