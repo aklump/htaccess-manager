@@ -38,4 +38,23 @@ class Path {
     return $path;
   }
 
+  /**
+   * Returns the extension from a file path (without leading dot).
+   *
+   * @param bool $forceLowerCase forces the extension to be lower-case
+   */
+  public static function getExtension(string $path, bool $forceLowerCase = FALSE): string {
+    if ('' === $path) {
+      return '';
+    }
+
+    $extension = pathinfo($path, \PATHINFO_EXTENSION);
+
+    if ($forceLowerCase) {
+      $extension = strtolower($extension);
+    }
+
+    return $extension;
+  }
+
 }
