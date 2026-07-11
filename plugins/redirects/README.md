@@ -1,10 +1,10 @@
-Use the 'redirects' key to set up .htaccess redirects. The most common use case would be to map legacy URLs to new ones. Redirects defined at the top level are shared across all .htaccess files. See also file-level.
+Use the `redirects` key to set up .htaccess redirects. The most common use case would be to map legacy URLs to new ones. Redirects defined at the top level are shared across all .htaccess files. See also file-level.
 
-You may also use this to return 1XX,2XX,4XX,5XX codes when a certain URL is hit. Most common use would be to forbid a url. @see "Handling Errors" below.
+You may also use this plugin to return 1XX,2XX,4XX,5XX codes when a certain URL is hit. Most common use would be to forbid a url. @see "Handling Errors" below.
 
 * <https://developer.mozilla.org/en-US/docs/Web/HTTP/Status>
 
-## Regex is supported, see example below.
+> Regex is supported, see example below.
 
 ## Path Preprocessing During Build
 
