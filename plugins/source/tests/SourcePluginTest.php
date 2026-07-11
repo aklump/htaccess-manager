@@ -19,6 +19,7 @@ use PHPUnit\Framework\TestCase;
  * @uses   \AKlump\HtaccessManager\Plugin\MergePluginSchemas
  * @uses   \AKlump\JsonSchema\MergeSchemas
  * @uses   \AKlump\HtaccessManager\Helper\GetShortPath
+ * @uses   \AKlump\HtaccessManager\Helper\SubstituteEnvVars
  *
  */
 class SourcePluginTest extends TestCase {

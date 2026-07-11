@@ -12,6 +12,7 @@
          verbose="true">
     <testsuites>
         <testsuite name="default">
+            <file>BuildCommandTest.php</file>
             <directory suffix="Test.php">.</directory>
             <directory suffix="Test.php">../plugins/*/tests/</directory>
         </testsuite>

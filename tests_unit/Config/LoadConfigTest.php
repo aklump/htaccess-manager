@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
  * @uses   \AKlump\HtaccessManager\Plugin\MergePluginSchemas
  * @uses   \AKlump\PluginFramework\GetPlugins
  * @uses   \AKlump\JsonSchema\MergeSchemas
+ * @uses   \AKlump\HtaccessManager\Helper\SubstituteEnvVars
  */
 class LoadConfigTest extends TestCase {
 
@@ -50,6 +51,17 @@ class LoadConfigTest extends TestCase {
     $expected = $this->getTestFileFilepath('alpha/apache/webroot/.htaccess.custom');
     $this->assertContains($expected, $config['files']['prod_webroot']['source']);
     $this->assertContains('https://raw.githubusercontent.com/drupal/drupal/7.x/.htaccess', $config['files']['prod_webroot']['source']);
+  }
+
+  public function testInvalidSchemaThrows() {
+    $this->deleteTestFile('.cache');
+    $config_path = $this->getTestFileFilepath('.cache/invalid_config.yml', TRUE);
+    // 'files' is required by the schema
+    file_put_contents($config_path, 'foo: bar');
+
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessage('Invalid configuration');
+    (new LoadConfig([]))($config_path);
   }
 
 }
